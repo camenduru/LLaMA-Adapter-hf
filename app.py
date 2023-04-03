@@ -140,17 +140,18 @@ def download_llama_7b(ckpt_dir, tokenizer_path):
     os.makedirs(ckpt_dir, exist_ok=True)
     ckpt_path = os.path.join(ckpt_dir, "consolidated.00.pth")
     param_path = os.path.join(ckpt_dir, "params.json")
-    if not os.path.exists(ckpt_path):
-        os.system(
-            f"wget -O {ckpt_path} https://huggingface.co/nyanko7/LLaMA-7B/resolve/main/consolidated.00.pth")
-    if not os.path.exists(param_path):
-        os.system(
-            f"wget -O {param_path} https://huggingface.co/nyanko7/LLaMA-7B/raw/main/params.json")
-    if not os.path.exists(tokenizer_path):
-        os.system(
-            f"wget -O {tokenizer_path} https://huggingface.co/nyanko7/LLaMA-7B/resolve/main/tokenizer.model")
     # if not os.path.exists(ckpt_path):
-    #     os.system("git clone https://huggingface.co/nyanko7/LLaMA-7B")
+    #     os.system(
+    #         f"wget -O {ckpt_path} https://huggingface.co/nyanko7/LLaMA-7B/resolve/main/consolidated.00.pth")
+    # if not os.path.exists(param_path):
+    #     os.system(
+    #         f"wget -O {param_path} https://huggingface.co/nyanko7/LLaMA-7B/raw/main/params.json")
+    # if not os.path.exists(tokenizer_path):
+    #     os.system(
+    #         f"wget -O {tokenizer_path} https://huggingface.co/nyanko7/LLaMA-7B/resolve/main/tokenizer.model")
+    if not os.path.exists(ckpt_path):
+        os.system("git lfs install")
+        os.system("git clone https://huggingface.co/nyanko7/LLaMA-7B")
     print("LLaMA-7B downloaded")
 
 def download_llama_adapter(instruct_adapter_path, caption_adapter_path):
