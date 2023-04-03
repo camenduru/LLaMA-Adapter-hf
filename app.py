@@ -6,6 +6,7 @@ import time
 from pathlib import Path
 from typing import Tuple
 
+from huggingface_hub import hf_hub_download
 from PIL import Image
 import gradio as gr
 import torch
@@ -46,7 +47,8 @@ def setup_model_parallel() -> Tuple[int, int]:
 
 
 def load(
-    ckpt_dir: str,
+    ckpt_path: str,
+    param_path: str,
     tokenizer_path: str,
     instruct_adapter_path: str,
     caption_adapter_path: str,
@@ -56,18 +58,19 @@ def load(
     max_batch_size: int,
 ) -> LLaMA:
     start_time = time.time()
-    checkpoints = sorted(Path(ckpt_dir).glob("*.pth"))
-    assert world_size == len(
-        checkpoints
-    ), f"Loading a checkpoint for MP={len(checkpoints)} but world size is {world_size}"
-    ckpt_path = checkpoints[local_rank]
+    # checkpoints = sorted(Path(ckpt_dir).glob("*.pth"))
+    # assert world_size == len(
+    #     checkpoints
+    # ), f"Loading a checkpoint for MP={len(checkpoints)} but world size is {world_size}"
+    # ckpt_path = checkpoints[local_rank]
     print("Loading")
     checkpoint = torch.load(ckpt_path, map_location="cpu")
     instruct_adapter_checkpoint = torch.load(
         instruct_adapter_path, map_location="cpu")
     caption_adapter_checkpoint = torch.load(
         caption_adapter_path, map_location="cpu")
-    with open(Path(ckpt_dir) / "params.json", "r") as f:
+    # with open(Path(ckpt_dir) / "params.json", "r") as f:
+    with open(param_path, "r") as f:
         params = json.loads(f.read())
 
     model_args: ModelArgs = ModelArgs(
@@ -149,9 +152,10 @@ def download_llama_7b(ckpt_dir, tokenizer_path):
     # if not os.path.exists(tokenizer_path):
     #     os.system(
     #         f"wget -O {tokenizer_path} https://huggingface.co/nyanko7/LLaMA-7B/resolve/main/tokenizer.model")
-    if not os.path.exists(ckpt_path):
-        os.system("git lfs install")
-        os.system("git clone https://huggingface.co/nyanko7/LLaMA-7B")
+    # if not os.path.exists(ckpt_path):
+    #     os.system("git lfs install")
+    #     os.system("git clone https://huggingface.co/nyanko7/LLaMA-7B")
+
     print("LLaMA-7B downloaded")
 
 def download_llama_adapter(instruct_adapter_path, caption_adapter_path):
@@ -164,15 +168,18 @@ def download_llama_adapter(instruct_adapter_path, caption_adapter_path):
 
 # ckpt_dir = "/data1/llma/7B"
 # tokenizer_path = "/data1/llma/tokenizer.model"
-ckpt_dir = "LLaMA-7B/"
-tokenizer_path = "LLaMA-7B/tokenizer.model"
+# ckpt_dir = "LLaMA-7B/"
+# tokenizer_path = "LLaMA-7B/tokenizer.model"
+ckpt_path = hf_hub_download(repo_id="nyanko7/LLaMA-7B", filename="consolidated.00.pth")
+param_path = hf_hub_download(repo_id="nyanko7/LLaMA-7B", filename="params.json")
+tokenizer_path = hf_hub_download(repo_id="nyanko7/LLaMA-7B", filename="tokenizer.model")
 instruct_adapter_path = "llama_adapter_len10_layer30_release.pth"
 caption_adapter_path = "llama_adapter_len10_layer30_caption_vit_l.pth"
 max_seq_len = 512
 max_batch_size = 1
 
 # download models
-download_llama_7b(ckpt_dir, tokenizer_path)
+# download_llama_7b(ckpt_dir, tokenizer_path)
 download_llama_adapter(instruct_adapter_path, caption_adapter_path)
 
 local_rank, world_size = setup_model_parallel()
@@ -180,7 +187,7 @@ if local_rank > 0:
     sys.stdout = open(os.devnull, "w")
 
 generator = load(
-    ckpt_dir, tokenizer_path, instruct_adapter_path, caption_adapter_path, local_rank, world_size, max_seq_len, max_batch_size
+    ckpt_path, param_path, tokenizer_path, instruct_adapter_path, caption_adapter_path, local_rank, world_size, max_seq_len, max_batch_size
 )
 
 

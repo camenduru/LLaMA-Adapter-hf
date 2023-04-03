@@ -1,6 +1,7 @@
-torch==1.12.0
+torch
 fairscale
 sentencepiece
 Pillow
+huggingface_hub
 git+https://github.com/csuhan/timm_0_3_2.git
 git+https://github.com/openai/CLIP.git
