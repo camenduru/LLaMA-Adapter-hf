@@ -86,6 +86,7 @@ def load(
 
     torch.set_default_tensor_type(torch.FloatTensor)
     model.load_state_dict(checkpoint, strict=False)
+    del checkpoint
     model.load_state_dict(instruct_adapter_checkpoint, strict=False)
     model.load_state_dict(caption_adapter_checkpoint, strict=False)
     vision_model.load_state_dict(caption_adapter_checkpoint, strict=False)
