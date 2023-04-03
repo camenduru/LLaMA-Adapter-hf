@@ -64,7 +64,7 @@ def load(
     # ), f"Loading a checkpoint for MP={len(checkpoints)} but world size is {world_size}"
     # ckpt_path = checkpoints[local_rank]
     print("Loading")
-    checkpoint = torch.load(ckpt_path, map_location="cpu")
+    # checkpoint = torch.load(ckpt_path, map_location="cpu")
     instruct_adapter_checkpoint = torch.load(
         instruct_adapter_path, map_location="cpu")
     caption_adapter_checkpoint = torch.load(
@@ -88,8 +88,8 @@ def load(
     vision_model = VisionModel(model_args)
 
     torch.set_default_tensor_type(torch.FloatTensor)
-    model.load_state_dict(checkpoint, strict=False)
-    del checkpoint
+    # model.load_state_dict(checkpoint, strict=False)
+    # del checkpoint
     model.load_state_dict(instruct_adapter_checkpoint, strict=False)
     model.load_state_dict(caption_adapter_checkpoint, strict=False)
     vision_model.load_state_dict(caption_adapter_checkpoint, strict=False)
@@ -169,7 +169,8 @@ def download_llama_adapter(instruct_adapter_path, caption_adapter_path):
 # ckpt_path = "/data1/llma/7B/consolidated.00.pth"
 # param_path = "/data1/llma/7B/params.json"
 # tokenizer_path = "/data1/llma/tokenizer.model"
-ckpt_path = hf_hub_download(repo_id="nyanko7/LLaMA-7B", filename="consolidated.00.pth")
+# ckpt_path = hf_hub_download(repo_id="nyanko7/LLaMA-7B", filename="consolidated.00.pth")
+ckpt_path = None
 param_path = hf_hub_download(repo_id="nyanko7/LLaMA-7B", filename="params.json")
 tokenizer_path = hf_hub_download(repo_id="nyanko7/LLaMA-7B", filename="tokenizer.model")
 instruct_adapter_path = "llama_adapter_len10_layer30_release.pth"

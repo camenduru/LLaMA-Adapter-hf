@@ -1,4 +1,5 @@
 torch==1.12.0
+cudatooklit==11.3
 fairscale
 sentencepiece
 Pillow
