@@ -150,7 +150,7 @@ def download_llama_7b(ckpt_dir, tokenizer_path):
     #     os.system(
     #         f"wget -O {tokenizer_path} https://huggingface.co/nyanko7/LLaMA-7B/resolve/main/tokenizer.model")
     if not os.path.exists(ckpt_path):
-        os.system("git clone https://huggingface.co/nyanko7/LLaMA-7B")
+        os.system("git lfs clone https://huggingface.co/nyanko7/LLaMA-7B")
     print("LLaMA-7B downloaded")
 
 def download_llama_adapter(instruct_adapter_path, caption_adapter_path):
