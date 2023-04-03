@@ -160,16 +160,15 @@ def download_llama_7b(ckpt_dir, tokenizer_path):
 
 def download_llama_adapter(instruct_adapter_path, caption_adapter_path):
     if not os.path.exists(instruct_adapter_path):
-        os.system(f"wget -O {instruct_adapter_path} https://github.com/ZrrSkywalker/LLaMA-Adapter/releases/download/v.1.0.0/llama_adapter_len10_layer30_release.pth")
+        os.system(f"wget -q -O {instruct_adapter_path} https://github.com/ZrrSkywalker/LLaMA-Adapter/releases/download/v.1.0.0/llama_adapter_len10_layer30_release.pth")
 
     if not os.path.exists(caption_adapter_path):
-        os.system(f"wget -O {caption_adapter_path} https://github.com/ZrrSkywalker/LLaMA-Adapter/releases/download/v.1.0.0/llama_adapter_len10_layer30_caption_vit_l.pth")
+        os.system(f"wget -q -O {caption_adapter_path} https://github.com/ZrrSkywalker/LLaMA-Adapter/releases/download/v.1.0.0/llama_adapter_len10_layer30_caption_vit_l.pth")
 
 
-# ckpt_dir = "/data1/llma/7B"
+# ckpt_path = "/data1/llma/7B/consolidated.00.pth"
+# param_path = "/data1/llma/7B/params.json"
 # tokenizer_path = "/data1/llma/tokenizer.model"
-# ckpt_dir = "LLaMA-7B/"
-# tokenizer_path = "LLaMA-7B/tokenizer.model"
 ckpt_path = hf_hub_download(repo_id="nyanko7/LLaMA-7B", filename="consolidated.00.pth")
 param_path = hf_hub_download(repo_id="nyanko7/LLaMA-7B", filename="params.json")
 tokenizer_path = hf_hub_download(repo_id="nyanko7/LLaMA-7B", filename="tokenizer.model")
