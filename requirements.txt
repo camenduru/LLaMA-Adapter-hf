@@ -2,5 +2,5 @@ torch
 fairscale
 sentencepiece
 Pillow
-timm==0.3.2
+git+https://github.com/csuhan/timm_0_3_2.git
 git+https://github.com/openai/CLIP.git
