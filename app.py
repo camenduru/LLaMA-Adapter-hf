@@ -139,15 +139,17 @@ def download_llama_7b(ckpt_dir, tokenizer_path):
     os.makedirs(ckpt_dir, exist_ok=True)
     ckpt_path = os.path.join(ckpt_dir, "consolidated.00.pth")
     param_path = os.path.join(ckpt_dir, "params.json")
+    # if not os.path.exists(ckpt_path):
+    #     os.system(
+    #         f"wget -O {ckpt_path} https://huggingface.co/nyanko7/LLaMA-7B/resolve/main/consolidated.00.pth")
+    # if not os.path.exists(param_path):
+    #     os.system(
+    #         f"wget -O {param_path} https://huggingface.co/nyanko7/LLaMA-7B/raw/main/params.json")
+    # if not os.path.exists(tokenizer_path):
+    #     os.system(
+    #         f"wget -O {tokenizer_path} https://huggingface.co/nyanko7/LLaMA-7B/resolve/main/tokenizer.model")
     if not os.path.exists(ckpt_path):
-        os.system(
-            f"wget -O {ckpt_path} https://huggingface.co/nyanko7/LLaMA-7B/resolve/main/consolidated.00.pth")
-    if not os.path.exists(param_path):
-        os.system(
-            f"wget -O {param_path} https://huggingface.co/nyanko7/LLaMA-7B/raw/main/params.json")
-    if not os.path.exists(tokenizer_path):
-        os.system(
-            f"wget -O {tokenizer_path} https://huggingface.co/nyanko7/LLaMA-7B/resolve/main/tokenizer.model")
+        os.system("git clone https://huggingface.co/nyanko7/LLaMA-7B")
     print("LLaMA-7B downloaded")
 
 def download_llama_adapter(instruct_adapter_path, caption_adapter_path):
@@ -160,8 +162,8 @@ def download_llama_adapter(instruct_adapter_path, caption_adapter_path):
 
 # ckpt_dir = "/data1/llma/7B"
 # tokenizer_path = "/data1/llma/tokenizer.model"
-ckpt_dir = "llama_7B/"
-tokenizer_path = "tokenizer.model"
+ckpt_dir = "LLaMA-7B/"
+tokenizer_path = "LLaMA-7B/tokenizer.model"
 instruct_adapter_path = "llama_adapter_len10_layer30_release.pth"
 caption_adapter_path = "llama_adapter_len10_layer30_caption_vit_l.pth"
 max_seq_len = 512
