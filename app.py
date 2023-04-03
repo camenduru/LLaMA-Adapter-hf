@@ -66,7 +66,7 @@ def load(
     # ), f"Loading a checkpoint for MP={len(checkpoints)} but world size is {world_size}"
     # ckpt_path = checkpoints[local_rank]
     print("Loading")
-    checkpoint = torch.load(ckpt_path, map_location="cpu")
+    checkpoint = torch.load(ckpt_path, map_location="cuda")
     instruct_adapter_checkpoint = torch.load(
         instruct_adapter_path, map_location="cpu")
     caption_adapter_checkpoint = torch.load(
@@ -87,12 +87,13 @@ def load(
     model_args.vocab_size = tokenizer.n_words
     torch.set_default_tensor_type(torch.cuda.HalfTensor)
     model = Transformer(model_args)
-    vision_model = VisionModel(model_args)
-
-    torch.set_default_tensor_type(torch.FloatTensor)
     model.load_state_dict(checkpoint, strict=False)
     del checkpoint
     torch.cuda.empty_cache()
+    vision_model = VisionModel(model_args)
+
+    torch.set_default_tensor_type(torch.FloatTensor)
+    
     model.load_state_dict(instruct_adapter_checkpoint, strict=False)
     model.load_state_dict(caption_adapter_checkpoint, strict=False)
     vision_model.load_state_dict(caption_adapter_checkpoint, strict=False)
