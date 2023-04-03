@@ -1,0 +1,6 @@
+example*
+*bak
+flagged
+*.sh
+__pycache__/
+*.pth

@@ -1,0 +1,6 @@
+torch
+fairscale
+sentencepiece
+Pillow
+timm==0.3.2
+git+https://github.com/openai/CLIP.git
