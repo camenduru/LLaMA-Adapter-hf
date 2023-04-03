@@ -62,11 +62,11 @@ def load(
     ), f"Loading a checkpoint for MP={len(checkpoints)} but world size is {world_size}"
     ckpt_path = checkpoints[local_rank]
     print("Loading")
-    checkpoint = torch.load(ckpt_path, map_location="cuda")
+    checkpoint = torch.load(ckpt_path, map_location="cpu")
     instruct_adapter_checkpoint = torch.load(
-        instruct_adapter_path, map_location="cuda")
+        instruct_adapter_path, map_location="cpu")
     caption_adapter_checkpoint = torch.load(
-        caption_adapter_path, map_location="cuda")
+        caption_adapter_path, map_location="cpu")
     with open(Path(ckpt_dir) / "params.json", "r") as f:
         params = json.loads(f.read())
 
