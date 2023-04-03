@@ -168,12 +168,12 @@ def download_llama_adapter(instruct_adapter_path, caption_adapter_path):
         os.system(f"wget -q -O {caption_adapter_path} https://github.com/ZrrSkywalker/LLaMA-Adapter/releases/download/v.1.0.0/llama_adapter_len10_layer30_caption_vit_l.pth")
 
 
-ckpt_path = "/data1/llma/7B/consolidated.00.pth"
-param_path = "/data1/llma/7B/params.json"
-tokenizer_path = "/data1/llma/tokenizer.model"
-# ckpt_path = hf_hub_download(repo_id="nyanko7/LLaMA-7B", filename="consolidated.00.pth")
-# param_path = hf_hub_download(repo_id="nyanko7/LLaMA-7B", filename="params.json")
-# tokenizer_path = hf_hub_download(repo_id="nyanko7/LLaMA-7B", filename="tokenizer.model")
+# ckpt_path = "/data1/llma/7B/consolidated.00.pth"
+# param_path = "/data1/llma/7B/params.json"
+# tokenizer_path = "/data1/llma/tokenizer.model"
+ckpt_path = hf_hub_download(repo_id="nyanko7/LLaMA-7B", filename="consolidated.00.pth")
+param_path = hf_hub_download(repo_id="nyanko7/LLaMA-7B", filename="params.json")
+tokenizer_path = hf_hub_download(repo_id="nyanko7/LLaMA-7B", filename="tokenizer.model")
 instruct_adapter_path = "llama_adapter_len10_layer30_release.pth"
 caption_adapter_path = "llama_adapter_len10_layer30_caption_vit_l.pth"
 max_seq_len = 512
