@@ -1,8 +1,8 @@
 ---
 title: LLaMA Adapter
-emoji: 🐨
-colorFrom: yellow
-colorTo: yellow
+emoji: 🚀
+colorFrom: red
+colorTo: indigo
 sdk: gradio
 sdk_version: 3.23.0
 app_file: app.py
