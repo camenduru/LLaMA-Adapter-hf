@@ -61,18 +61,11 @@ def load(
     max_batch_size: int,
 ) -> LLaMA:
     start_time = time.time()
-    # checkpoints = sorted(Path(ckpt_dir).glob("*.pth"))
-    # assert world_size == len(
-    #     checkpoints
-    # ), f"Loading a checkpoint for MP={len(checkpoints)} but world size is {world_size}"
-    # ckpt_path = checkpoints[local_rank]
     print("Loading")
-    # checkpoint = torch.load(ckpt_path, map_location="cuda")
     instruct_adapter_checkpoint = torch.load(
         instruct_adapter_path, map_location="cpu")
     caption_adapter_checkpoint = torch.load(
         caption_adapter_path, map_location="cpu")
-    # with open(Path(ckpt_dir) / "params.json", "r") as f:
     with open(param_path, "r") as f:
         params = json.loads(f.read())
 
@@ -88,22 +81,21 @@ def load(
     model_args.vocab_size = tokenizer.n_words
     torch.set_default_tensor_type(torch.cuda.HalfTensor)
     model = Transformer(model_args)
-    checkpoint1 = torch.load(ckpt0_path, map_location='cuda')
-    model.load_state_dict(checkpoint1, strict=False)
-    del checkpoint1
+
+    # To reduce memory usuage
+    ckpt0 = torch.load(ckpt0_path, map_location='cuda')
+    model.load_state_dict(ckpt0, strict=False)
+    del ckpt0
     torch.cuda.empty_cache()
 
-    checkpoint2 = torch.load(ckpt1_path, map_location='cuda')
-    model.load_state_dict(checkpoint2, strict=False)    
-    del checkpoint2
+    ckpt1 = torch.load(ckpt1_path, map_location='cuda')
+    model.load_state_dict(ckpt1, strict=False)
+    del ckpt1
     torch.cuda.empty_cache()
 
-    # model.load_state_dict(checkpoint, strict=False)
-    # del checkpoint
     vision_model = VisionModel(model_args)
 
     torch.set_default_tensor_type(torch.FloatTensor)
-    
     model.load_state_dict(instruct_adapter_checkpoint, strict=False)
     model.load_state_dict(caption_adapter_checkpoint, strict=False)
     vision_model.load_state_dict(caption_adapter_checkpoint, strict=False)
@@ -152,50 +144,33 @@ def caption_generate(
     return result
 
 
-def download_llama_7b(ckpt_dir, tokenizer_path):
-    print("LLaMA-7B downloading")
-    os.makedirs(ckpt_dir, exist_ok=True)
-    ckpt_path = os.path.join(ckpt_dir, "consolidated.00.pth")
-    param_path = os.path.join(ckpt_dir, "params.json")
-    # if not os.path.exists(ckpt_path):
-    #     os.system(
-    #         f"wget -O {ckpt_path} https://huggingface.co/nyanko7/LLaMA-7B/resolve/main/consolidated.00.pth")
-    # if not os.path.exists(param_path):
-    #     os.system(
-    #         f"wget -O {param_path} https://huggingface.co/nyanko7/LLaMA-7B/raw/main/params.json")
-    # if not os.path.exists(tokenizer_path):
-    #     os.system(
-    #         f"wget -O {tokenizer_path} https://huggingface.co/nyanko7/LLaMA-7B/resolve/main/tokenizer.model")
-    # if not os.path.exists(ckpt_path):
-    #     os.system("git lfs install")
-    #     os.system("git clone https://huggingface.co/nyanko7/LLaMA-7B")
-
-    print("LLaMA-7B downloaded")
-
 def download_llama_adapter(instruct_adapter_path, caption_adapter_path):
     if not os.path.exists(instruct_adapter_path):
-        os.system(f"wget -q -O {instruct_adapter_path} https://github.com/ZrrSkywalker/LLaMA-Adapter/releases/download/v.1.0.0/llama_adapter_len10_layer30_release.pth")
+        os.system(
+            f"wget -q -O {instruct_adapter_path} https://github.com/ZrrSkywalker/LLaMA-Adapter/releases/download/v.1.0.0/llama_adapter_len10_layer30_release.pth")
 
     if not os.path.exists(caption_adapter_path):
-        os.system(f"wget -q -O {caption_adapter_path} https://github.com/ZrrSkywalker/LLaMA-Adapter/releases/download/v.1.0.0/llama_adapter_len10_layer30_caption_vit_l.pth")
+        os.system(
+            f"wget -q -O {caption_adapter_path} https://github.com/ZrrSkywalker/LLaMA-Adapter/releases/download/v.1.0.0/llama_adapter_len10_layer30_caption_vit_l.pth")
 
 
 # ckpt_path = "/data1/llma/7B/consolidated.00.pth"
 # param_path = "/data1/llma/7B/params.json"
 # tokenizer_path = "/data1/llma/tokenizer.model"
-# ckpt_path = hf_hub_download(repo_id="nyanko7/LLaMA-7B", filename="consolidated.00.pth")
-# param_path = hf_hub_download(repo_id="nyanko7/LLaMA-7B", filename="params.json")
-ckpt0_path = hf_hub_download(repo_id="csuhan/llama_storage", filename="consolidated.00_part0.pth")
-ckpt1_path = hf_hub_download(repo_id="csuhan/llama_storage", filename="consolidated.00_part1.pth")
-param_path = hf_hub_download(repo_id="nyanko7/LLaMA-7B", filename="params.json")
-tokenizer_path = hf_hub_download(repo_id="nyanko7/LLaMA-7B", filename="tokenizer.model")
+ckpt0_path = hf_hub_download(
+    repo_id="csuhan/llama_storage", filename="consolidated.00_part0.pth")
+ckpt1_path = hf_hub_download(
+    repo_id="csuhan/llama_storage", filename="consolidated.00_part1.pth")
+param_path = hf_hub_download(
+    repo_id="nyanko7/LLaMA-7B", filename="params.json")
+tokenizer_path = hf_hub_download(
+    repo_id="nyanko7/LLaMA-7B", filename="tokenizer.model")
 instruct_adapter_path = "llama_adapter_len10_layer30_release.pth"
 caption_adapter_path = "llama_adapter_len10_layer30_caption_vit_l.pth"
 max_seq_len = 512
 max_batch_size = 1
 
 # download models
-# download_llama_7b(ckpt_dir, tokenizer_path)
 download_llama_adapter(instruct_adapter_path, caption_adapter_path)
 
 local_rank, world_size = setup_model_parallel()
@@ -285,8 +260,9 @@ def create_caption_demo():
         run_botton.click(fn=caption_generate, inputs=inputs, outputs=outputs)
     return instruct_demo
 
+
 description = """
-# LLaMA-Adapter
+# LLaMA-Adapter🚀
 The official demo for **LLaMA-Adapter: Efficient Fine-tuning of Language Models with Zero-init Attention**.
 Please refer to our [arXiv paper](https://arxiv.org/abs/2303.16199) and [github](https://github.com/ZrrSkywalker/LLaMA-Adapter) for more details.
 """
