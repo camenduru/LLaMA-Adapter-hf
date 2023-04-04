@@ -49,7 +49,8 @@ def setup_model_parallel() -> Tuple[int, int]:
 
 
 def load(
-    ckpt_path: str,
+    ckpt0_path: str,
+    ckpt1_path: str,
     param_path: str,
     tokenizer_path: str,
     instruct_adapter_path: str,
@@ -66,7 +67,7 @@ def load(
     # ), f"Loading a checkpoint for MP={len(checkpoints)} but world size is {world_size}"
     # ckpt_path = checkpoints[local_rank]
     print("Loading")
-    checkpoint = torch.load(ckpt_path, map_location="cuda")
+    # checkpoint = torch.load(ckpt_path, map_location="cuda")
     instruct_adapter_checkpoint = torch.load(
         instruct_adapter_path, map_location="cpu")
     caption_adapter_checkpoint = torch.load(
@@ -87,9 +88,18 @@ def load(
     model_args.vocab_size = tokenizer.n_words
     torch.set_default_tensor_type(torch.cuda.HalfTensor)
     model = Transformer(model_args)
-    model.load_state_dict(checkpoint, strict=False)
-    del checkpoint
+    checkpoint1 = torch.load(ckpt0_path, map_location='cuda')
+    model.load_state_dict(checkpoint1, strict=False)
+    del checkpoint1
     torch.cuda.empty_cache()
+
+    checkpoint2 = torch.load(ckpt1_path, map_location='cuda')
+    model.load_state_dict(checkpoint2, strict=False)    
+    del checkpoint2
+    torch.cuda.empty_cache()
+
+    # model.load_state_dict(checkpoint, strict=False)
+    # del checkpoint
     vision_model = VisionModel(model_args)
 
     torch.set_default_tensor_type(torch.FloatTensor)
@@ -173,7 +183,10 @@ def download_llama_adapter(instruct_adapter_path, caption_adapter_path):
 # ckpt_path = "/data1/llma/7B/consolidated.00.pth"
 # param_path = "/data1/llma/7B/params.json"
 # tokenizer_path = "/data1/llma/tokenizer.model"
-ckpt_path = hf_hub_download(repo_id="nyanko7/LLaMA-7B", filename="consolidated.00.pth")
+# ckpt_path = hf_hub_download(repo_id="nyanko7/LLaMA-7B", filename="consolidated.00.pth")
+# param_path = hf_hub_download(repo_id="nyanko7/LLaMA-7B", filename="params.json")
+ckpt0_path = hf_hub_download(repo_id="csuhan/llama_storage", filename="consolidated.00_part0.pth")
+ckpt1_path = hf_hub_download(repo_id="csuhan/llama_storage", filename="consolidated.00_part1.pth")
 param_path = hf_hub_download(repo_id="nyanko7/LLaMA-7B", filename="params.json")
 tokenizer_path = hf_hub_download(repo_id="nyanko7/LLaMA-7B", filename="tokenizer.model")
 instruct_adapter_path = "llama_adapter_len10_layer30_release.pth"
@@ -190,7 +203,7 @@ if local_rank > 0:
     sys.stdout = open(os.devnull, "w")
 
 generator = load(
-    ckpt_path, param_path, tokenizer_path, instruct_adapter_path, caption_adapter_path, local_rank, world_size, max_seq_len, max_batch_size
+    ckpt0_path, ckpt1_path, param_path, tokenizer_path, instruct_adapter_path, caption_adapter_path, local_rank, world_size, max_seq_len, max_batch_size
 )
 
 
