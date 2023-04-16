@@ -171,7 +171,7 @@ max_seq_len = 512
 max_batch_size = 1
 
 # download models
-download_llama_adapter(instruct_adapter_path, caption_adapter_path)
+# download_llama_adapter(instruct_adapter_path, caption_adapter_path)
 
 local_rank, world_size = setup_model_parallel()
 if local_rank > 0:

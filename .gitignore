@@ -3,4 +3,3 @@ example*
 flagged
 *.sh
 __pycache__/
-*.pth
